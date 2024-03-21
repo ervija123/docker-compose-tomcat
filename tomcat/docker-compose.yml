@@ -1,0 +1,28 @@
+version: "3.0"
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: 512m
+
+services:
+  tomcat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tomcat
+    ports:
+      - "80:8080"
+      - "443:8443"
+    restart: unless-stopped
+    ulimits:
+      nofile:
+        soft: 1048576
+        hard: 1048576
+    logging: *logging
+    volumes:
+      - "/var/www/tomcat/webapps/:/usr/local/tomcat/webapps/"
+      # - "/var/www/tomcat/logs/:/usr/local/tomcat/logs/"
+      - "/etc/nginx/ssl/:/usr/local/tomcat/ssl/:ro"
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
